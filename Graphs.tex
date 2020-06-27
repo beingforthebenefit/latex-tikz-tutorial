@@ -1,0 +1,268 @@
+\documentclass[10pt]{article}
+
+%necessary packages
+\usepackage{tikz}
+\usetikzlibrary{graphs}
+\usetikzlibrary{graphs.standard}
+
+%optional styles
+\usetikzlibrary{quotes}
+\usetikzlibrary{shapes.geometric}
+
+%unnecessary
+\usepackage{hyperref} 
+
+\title{The \emph{graphs} package in Ti\emph{k}Z}
+\author{Gerald Todd\\University of Montana}
+\date{}
+
+\begin{document}
+\maketitle
+
+
+This is a list of examples of how to draw graphs using the \emph{graphs} package in Ti\emph{k}Z. Everything in this package can be achieved using only basic $\backslash$node and $\backslash$draw commands, but the \emph{graphs} package automates an incredible amount of this, understanding complete graphs, complete bipartite graphs, cycles graphs, paths, node chains, and using complex algorithms to place the vertices in the best positions (most of the time).\bigskip
+
+This document only makes sense when viewing the source code (Graphs.tex) at the same time as the figures. All explanations are comments in the code.\bigskip
+
+Here, we will only scratch the surface of what \emph{tikz/graphs} can do. If you want a more intimate knowledge of how to use this and how it works, see the documentation here: \url{http://ftp.math.purdue.edu/mirrors/ctan.org/graphics/pgf/base/doc/pgfmanual.pdf}.\bigskip
+
+\center
+
+%example of a bipartite graph with bipartitions V and W.
+%the I_nm tells tikz to draw it as two columns of indpendent sets V and W.
+\tikz \graph { 
+
+	subgraph I_nm [V={a,b,c}, W={1,...,4}];
+		
+	a->{1,2,3};
+	b->{1,4};
+	c->{2 [>green!75!black],3,4[>red]}
+ };\bigskip
+ 
+ %example of a circular complete bipartite graph.
+ %tikz automatically decides where to place the nodes after telling it circular and inner and outer subgraphs
+ \tikz \graph [nodes={draw, fill, circle, inner sep=2pt}, clockwise, radius=.5cm, n=5, empty nodes] {
+ 	subgraph I_n [name=inner] -- [complete bipartite]
+ 	subgraph I_n [name=outer]
+ };\bigskip
+ 
+ 
+ %example of a cycle graph inside of anoth cycle graph. Notice, it is not complete. tikz decides that only the corresponding vertices of the inner and outer are connected.
+ \tikz
+ 	\graph[nodes={draw, circle}, clockwise, radius=.75cm, empty nodes, n=8] {
+ 	subgraph C_n [name=inner]<->
+ 	subgraph C_n [name=outer]
+ };\bigskip
+ 
+ %example of a "node chain". Notice the global command that draws a box around every node in the graph.
+ \tikz [every node/.style = draw]
+ \graph {foo->bar->blub};\bigskip
+ 
+ %multiple node chains. notice tikz uses the same vertex for "f". multiple chains are separated by semicolons or commas (they act exactly the same)
+ \tikz \graph {
+ 	a->b->c;
+ 	d->e->f;
+ 	g->f;
+ };\bigskip
+ 
+ 
+ %same graph but with a global style to draw dots for nodes, and do not label them with their names
+  \tikz [every node/.style = {draw,fill,circle,inner sep=1pt}] \graph [nodes=empty nodes] {
+ 	a->b->c;
+ 	d->e->f;
+ 	g->f;
+ };\bigskip
+ 
+ %example showing the node "name" can be different from node "text". Syntax is "name/text" or "name [as="text"]. Notice, you call the first node using "x1" but "$x_1$" is displayed.
+ \tikz \graph{
+ 	x1/$x_1$ -> x2 [as=$x_2$, red] -> x34/{$x_3,x_4$};
+ 	x1-> [bend left] x34;
+ };\bigskip
+ 
+ %example of "chain groups". "a" is sent to each element of the first component of the chain group.
+ \tikz \graph {
+ 	a->{
+ 		b->c,
+ 		d->e,
+ 	}->f
+ };\bigskip
+ 
+ %example of poor automatic placement but still cool.
+ %tree diagram automatically growing downward using nested chain groups.
+ \tikz \graph [grow down, branch right=2.5cm]{
+ 	root->{
+ 		child 1,
+ 		child 2->{
+ 			grand child 1,
+ 			grand child 2
+ 		},
+ 		child 3-> {
+ 			grand child 3
+ 		}
+ 	}
+ };\bigskip
+ 
+ \textbf{Edge Labels and Styles}\bigskip
+ 
+ %example using color and thickness
+ \tikz \graph{
+ 	a->[red] b--[thick]{c,d};
+ };
+ 
+ %example labelling the edges
+ \tikz \graph {
+	a ->[red, "foo"] b --[thick, "bar"] {c, d};
+ };
+ 
+ %example of labelling edges in the middle of the edge. Requires "\usetikzlibrary{quotes}"
+ \tikz \graph [edge quotes={fill=white, inner sep=1pt}, grow down, branch right, nodes={circle,draw}]{
+ 	""->h [>"9"]-> {
+ 	c [>"4"] -> {
+ 		a[>"2"],
+ 		e[>"0"]
+ 	},
+ 	j[>"7"]
+ }
+};\bigskip
+
+\textbf{Node Sets: More Exact Placement}\bigskip
+
+% Place nodes like normal in TikZ and the graph environment will still recognize them. Syntax is \node ("name") at ("xval","yval") {"text"};
+\tikz {
+	\node (a) at (0,0) {A};
+	\node (b) at (1,0) {B};
+	\node (c) at (2,0) {C};
+	
+	\graph { (a)->(b)->(c) };
+}\bigskip
+
+%using node sets in a more complex manner. name the set and assign node to it.
+%these shapes require "\usetikzlibrary{shapes.geometric}"
+\tikz [new set=my nodes] {
+	\node [set=my nodes, circle, draw] at (1,1) {A};
+	\node [set=my nodes, rectangle, draw] at (1.5,0) {B};
+	\node [set=my nodes, diamond, draw] at (1,-1) {C};
+	\node (d) [star, draw] at (3,0) {D};
+	
+	\graph {X-> (my nodes) -> (d)};
+}\bigskip
+
+\textbf{Macros! Beautiful, Wonderful Macros!}\bigskip
+
+%A simple K_6 in one short line
+\tikz \graph{subgraph K_n [n=6, clockwise]};\\
+\textit{Drawn in 40 characters.}\bigskip
+
+%A simple K_6 with regular vertices
+\tikz \graph[nodes={draw,fill,circle,inner sep=1pt}, empty nodes] {subgraph K_n [n=6, clockwise]};\\
+\emph{With regular vertices. Drawn in 90 characters. Improvement below.}\bigskip
+
+%One could also set a new command \graphstyle in the preamble:
+\newcommand{\graphstyle}{\graph [nodes={draw,fill,circle,inner sep=1pt}, empty nodes]}
+
+%then, the above example is as easy as:
+\tikz \graphstyle {subgraph K_n [n=6,clockwise]};\\
+\emph{Drawn in 45 characters.}\bigskip
+
+
+%a cycle graph (tikz is told this by "C_n" directed inward to "mid"
+\tikz \graph {subgraph C_n [n=5,clockwise]->mid};\\
+\textit{Drawn in 45 characters.}\bigskip
+
+%again using the new command \graphstyle, we have
+\tikz \graphstyle {subgraph C_n [n=5,clockwise]->mid};\\
+\emph{Drawn in 50 characters.}\bigskip
+
+%More complicated connecting commands
+\tikz [x=10mm,y=6mm,circle] \graph [nodes={fill=blue!70}, empty nodes, n=8] {
+	subgraph I_n [name=A] --[butterfly={level=4}]
+	subgraph I_n [name=B] --[butterfly={level=2}]
+	subgraph I_n [name=C] --[butterfly]
+	subgraph I_n [name=D] --
+	subgraph I_n [name=E]
+};\\
+\emph{Butterfly connectors}\bigskip
+
+\textbf{A Closer Look at the Syntax of \emph{graphs}}\bigskip
+
+%self-explanatory examples below
+\tikz \graph [nodes=red] {a->b->c};
+\bigskip
+
+\tikz \graph [edges={red,thick}] {a->b->c};
+\bigskip
+
+%placing a node mid-path on every edge
+\tikz \graph [edge node={node [near end] {X}}] {a->b->c};
+\bigskip
+
+%more exact placement of above example. "X" will be placed exactly 70% along the way of each path
+\tikz \graph [edge node={node [pos=.7] {X}}] {a->b->c};
+\bigskip
+
+%multiple nodes per edge
+\tikz \graph [edge node={node [near end] {X}}, edge node={node [near start] {Y}}] {a->b->c};
+\bigskip
+
+%global edge label
+\tikz \graph [edge label=x] {a->b->{c,d}};
+\bigskip
+
+%swap label placement using "edge label'" (it's followed by an apostrophe)
+\tikz \graph [edge label=out, edge label'=in]
+	{subgraph C_n [clockwise, n=5] };
+\bigskip
+	
+%options applying only to a group of nodes
+\tikz \graph {
+	a->{ [nodes=red] %local to this group
+		b,c
+	}->d
+};\\
+\emph{Setting options local to just one node group}
+\bigskip
+
+%foreach is supported in graphs! Each iteration is treated and parsed as a new chain. Notice use of "math nodes" option. Auto math mode for node text!
+\tikz \graph [math nodes, branch down=5mm] {
+	a->{
+		\foreach \i in {1,2,3} {
+			a_\i->{x_\i, y_\i}
+		},
+		b
+	}
+};\\
+\emph{Result of using foreach in graphs}
+\bigskip
+
+%a loop to create a chain of dynamic length! I don't quite understand this but it was in the documentation.
+\def\mychain#1{
+	\def\mytext{1}
+	\foreach \i in {2,...,#1} {
+		\xdef\mytext{\mytext -> \i}
+	}
+}
+\tikzgraphsset{my chain/.style={
+	/utils/exec=\mychain{#1},
+	parse/.expand once=\mytext}
+}
+\tikz \graph { [my chain=4] };\\
+\emph{A chain of dynamic length}\bigskip
+
+%An example of how to alter an existing graph by specifying it is simple. In this graph, we remove specific edges of a complete bipartite graph. We must specify that the graph is "simple" as shown.
+%\tikz \graph [simple] {
+%	subgraph K_nm [V={a,b,c,d}, W={1,2,3,4}];
+%	
+%	%after drawing the complete graph, I can change edges as I wish if I specify the graph as simple, like above. New edges replace old edges
+%	
+%	(a)-!-(1), %removes the edge
+%	(c)->(4), %directs the edge
+%	(d)<->(4) %directs the edge
+%	(c)->[red,thick,dashed](1) %style the edge
+%};\\
+%\emph{Modifying existing graphs}\bigskip
+%
+%\tikz \graph[simple]{subgraph K_n [n=5, clockwise]{
+%	1-!-4;}
+
+
+\end{document}
