@@ -5,3 +5,8 @@ This is a list of examples of how to draw graphs using the `graphs` package in T
 This document only makes sense when viewing the source code (`Graphs.tex`) at the same time as the PDF. All explanations are comments in the code.
 
 Here, we will only scratch the surface of what `tikz/graphs` can do. If you want a more intimate knowledge of how to use this and how it works, see the documentation [here](http://ftp.math.purdue.edu/mirrors/ctan.org/graphics/pgf/base/doc/pgfmanual.pdf}).
+
+# Author
+
+Gerald Todd
+[geraldtodd.dev](https://geraldtodd.dev)
