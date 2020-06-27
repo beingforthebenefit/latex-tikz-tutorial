@@ -1,4 +1,4 @@
-# TikZ `graph` package tutorial
+# TikZ `graphs` package tutorial
 
 This is a list of examples of how to draw graphs using the `graphs` package in TikZ. Everything in this package can be achieved using only basic `\node` and `\draw` commands, but the `graphs` package automates an incredible amount of this, understanding complete graphs, complete bipartite graphs, cycles graphs, paths, node chains, and using complex algorithms to place the vertices in the best positions (most of the time).
 
