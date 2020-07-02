@@ -9,4 +9,7 @@ Here, we will only scratch the surface of what `tikz/graphs` can do. If you want
 # Author
 
 Gerald Todd
-[geraldtodd.dev](https://geraldtodd.dev)
+
+gerald@gtodd.dev
+
+[gtodd.dev](https://gtodd.dev)
